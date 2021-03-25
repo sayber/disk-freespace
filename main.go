@@ -55,30 +55,25 @@ func DiskFreeSpace(path string) (disk DiskStruct) {
 
 func sendMessageTelegram(chatId int, text string, size int64) (string, error) {
 
-	log.Printf("Sending %s to chat_id: %d", text, chatId)
-	var telegramApi string = "https://api.telegram.org/bot" + os.Getenv("TOKEN") + "/sendMessage"
-	//msg := strings.Join([]string{"err:", err.Error(), "message:", message}, "")
+	var api string = "https://api.telegram.org/bot" + os.Getenv("TOKEN") + "/sendMessage"
 
 	response, err := http.PostForm(
-		telegramApi,
+		api,
 		url.Values{
 			"chat_id": {strconv.Itoa(chatId)},
 			"text":    {text},
 		})
 
 	if err != nil {
-		log.Printf("error when posting text to the chat: %s", err.Error())
 		return "", err
 	}
 	defer response.Body.Close()
 
 	var bodyBytes, errRead = ioutil.ReadAll(response.Body)
 	if errRead != nil {
-		log.Printf("error in parsing telegram answer %s", errRead.Error())
 		return "", err
 	}
 	bodyString := string(bodyBytes)
-	log.Printf("Body of Telegram Response: %s", bodyString)
 
 	return bodyString, nil
 }
